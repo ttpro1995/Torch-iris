@@ -34,7 +34,7 @@ function feval(params)
   local predict = output[2]
   local lost = criterion:forward(predict, y)
   local dloss_doutput = criterion:backward(predict, y)
-  model:backward(input, dloss_doutput)
+  model:backward(input, {h_0,dloss_doutput})
   return params, gradParams
 end
 
@@ -43,6 +43,16 @@ optimState = {
 	learningRate = 0.01
 }
 
-for epoch = 1, 1000 do
+for epoch = 1, 10000 do
 	optim.sgd(feval,params,optimState)
 end
+
+result = model:forward(input)
+result = result[2]
+val, idx = torch.max(result,2) -- find max value in 2 dimemsion
+-- idx is class of each sample classified by model
+
+--compare with truth ground
+mask = idx:eq(y:long())
+acc = mask:sum()/mask:size(1)
+print('accurate '..acc)
