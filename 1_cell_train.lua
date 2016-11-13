@@ -56,3 +56,11 @@ val, idx = torch.max(result,2) -- find max value in 2 dimemsion
 mask = idx:eq(y:long())
 acc = mask:sum()/mask:size(1)
 print('accurate '..acc)
+
+gradParams:zero()
+output = model:forward(input)
+h = output[1]
+predict = output[2]
+lost = criterion:forward(predict, y)
+dloss_doutput = criterion:backward(predict, y)
+meow =  model:backward(input, {h_0,dloss_doutput})
